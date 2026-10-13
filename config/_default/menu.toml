@@ -1,0 +1,34 @@
+# ================= 导航菜单 =================
+# 导航栏：首页 / 文章 / 分类 / 项目 / 关于
+# （首页在 content/_index.md、项目和关于在各自页面文件里定义）
+
+[[main]]
+    identifier = "post"
+    name       = "文章"
+    url        = "/post/"
+    weight     = -95
+    [main.params]
+        icon = "tag"
+
+[[main]]
+    identifier = "categories"
+    name       = "分类"
+    url        = "/categories/"
+    weight     = -80
+    [main.params]
+        icon = "categories"
+
+# ================= 侧边栏社交图标 =================
+[[social]]
+    identifier = "github"
+    name       = "GitHub"
+    url        = "https://github.com/tianyonglin"
+    [social.params]
+        icon = "brand-github"
+
+[[social]]
+    identifier = "rss"
+    name       = "RSS"
+    url        = "/index.xml"
+    [social.params]
+        icon = "rss"

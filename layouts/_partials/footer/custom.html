@@ -1,0 +1,77 @@
+{{/* ================= 页脚站内导航 ================= */}}
+<style>
+    .footer-nav { margin-bottom: 10px; font-size: 14px; }
+    .footer-nav a { color: inherit; text-decoration: none; margin: 0 8px; opacity: .85; }
+    .footer-nav a:hover { opacity: 1; color: var(--accent-color); }
+</style>
+<div class="footer-nav">
+    <a href="/archives/">归档</a>·
+    <a href="/search/">搜索</a>·
+    <a href="/tags/">标签</a>·
+    <a href="/links/">友链</a>·
+    <a href="/changelog/">更新日志</a>·
+    <a href="/privacy/">隐私与版权</a>·
+    <a href="/index.xml">RSS</a>
+</div>
+
+{{/* ================= 阅读进度条 ================= */}}
+{{- if .IsPage -}}
+<div id="reading-progress" aria-hidden="true"><div id="reading-progress-bar"></div></div>
+{{- end -}}
+
+{{/* ================= 返回顶部 ================= */}}
+<button id="back-to-top" aria-label="返回顶部" title="返回顶部">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
+</button>
+
+{{/* ================= 首页 Bing 风景图轮播 ================= */}}
+{{ partial "footer/carousel.html" . }}
+
+<script>
+(function () {
+    var bar = document.getElementById('reading-progress-bar');
+    var btn = document.getElementById('back-to-top');
+
+    function onScroll() {
+        if (bar) {
+            var doc = document.documentElement;
+            var max = doc.scrollHeight - doc.clientHeight;
+            bar.style.width = (max > 0 ? (doc.scrollTop / max) * 100 : 0) + '%';
+        }
+        if (btn) btn.classList.toggle('visible', window.scrollY > 600);
+    }
+    document.addEventListener('scroll', onScroll, { passive: true });
+    onScroll();
+    if (btn) btn.addEventListener('click', function () {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+
+    {{/* 文章页：注入分享按钮 */}}
+    {{- if .IsPage -}}
+    var content = document.querySelector('section.article-content, .article-content');
+    if (content) {
+        var url = encodeURIComponent(window.location.href);
+        var title = encodeURIComponent(document.title.replace(/ · .*$/, ''));
+        var box = document.createElement('div');
+        box.className = 'article-share';
+        box.innerHTML =
+            '<span class="share-label">分享到</span>' +
+            '<a target="_blank" rel="noopener" href="https://twitter.com/intent/tweet?text=' + title + '&url=' + url + '">X / Twitter</a>' +
+            '<a target="_blank" rel="noopener" href="https://t.me/share/url?url=' + url + '&text=' + title + '">Telegram</a>' +
+            '<button type="button" class="copy-link">复制链接</button>';
+        content.appendChild(box);
+
+        var copyBtn = box.querySelector('.copy-link');
+        copyBtn.addEventListener('click', function () {
+            var done = function () { copyBtn.textContent = '已复制 ✓'; setTimeout(function () { copyBtn.textContent = '复制链接'; }, 2000); };
+            if (navigator.clipboard) { navigator.clipboard.writeText(window.location.href).then(done); }
+            else {
+                var t = document.createElement('textarea');
+                t.value = window.location.href; document.body.appendChild(t); t.select();
+                document.execCommand('copy'); document.body.removeChild(t); done();
+            }
+        });
+    }
+    {{- end -}}
+})();
+</script>

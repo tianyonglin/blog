@@ -1,0 +1,94 @@
+# ================= Stack 主题参数 =================
+mainSections   = ["post"]
+rssFullContent = true
+favicon        = "img/avatar.png"
+
+[footer]
+    since      = 2026
+    customText = ""
+
+# 文章作者名（用于结构化数据与文章元信息）⚠️ 改成你的昵称
+authorName = "博客主人"
+
+[dateFormat]
+    published   = ":date_full"
+    lastUpdated = ":date_full"
+
+[sidebar]
+    compact  = false
+    emoji    = "🐚"
+    avatar   = "img/avatar.png"
+
+[article]
+    math        = false
+    toc         = true
+    readingTime = true
+
+    [article.list]
+        # 首页文章卡片上显示标签
+        showTags = true
+
+    [article.license]
+        enabled = false
+        default = "Licensed under CC BY-NC-SA 4.0"
+
+# ================= 侧边栏小组件 =================
+[widgets]
+    homepage = [
+        { type = "search" },
+        { type = "categories", params = { limit = 10 } },
+        { type = "tag-cloud", params = { limit = 20 } },
+        { type = "archives", params = { limit = 5 } },
+    ]
+    page = [
+        { type = "toc" },
+    ]
+
+# ================= 深浅色模式 =================
+[colorScheme]
+    toggle  = true
+    default = "auto"
+
+[imageProcessing.content]
+    enabled = true
+
+[imageProcessing.thumbnail]
+    enabled = true
+
+# ================================================================
+# 评论系统（当前未启用，按 README「启用评论」一节配置后改为 true）
+# Stack 支持: giscus / twikoo / waline / disqus / utterances / artalk …
+# ================================================================
+[comments]
+    enabled  = false
+    provider = "giscus"
+
+    [comments.giscus]
+        repo             = "tianyonglin/blog-comments"   # 评论仓库（启用评论前需先在 GitHub 创建）
+        repoID           = ""                          # ⚠️ 在 giscus.app 获取
+        category         = "Announcements"
+        categoryID       = ""                          # ⚠️ 在 giscus.app 获取
+        mapping          = "pathname"
+        lightTheme       = "light"
+        darkTheme        = "dark_dimmed"
+        reactionsEnabled = 1
+        emitMetadata     = 0
+        inputPosition    = "top"
+        lang             = "zh-CN"
+        strict           = 1
+        loading          = "lazy"
+
+    # 备选：Twikoo（国内访问友好，可用 Vercel 免费部署）
+    [comments.twikoo]
+        envId  = ""
+        region = ""
+        path   = ""
+        lang   = "zh-CN"
+
+    # 备选：Waline
+    [comments.waline]
+        serverURL = ""
+        lang      = "zh-CN"
+        pageview  = true
+        emoji     = ["https://unpkg.com/@waline/emojis@1.0.1/weibo"]
+        requiredMeta = ["name"]

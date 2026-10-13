@@ -1,0 +1,24 @@
+# ================= 站点基础配置 =================
+# 站点地址（已配置为正式域名）
+baseURL                = "https://sunmusic.top/"
+title                  = "拾贝集 · The Beachcomber"
+theme                  = "hugo-theme-stack"
+
+# 主题 i18n 语言（zh 对应简体中文）
+defaultContentLanguage = "zh"
+locale                 = "zh-CN"
+# 中文分词统计必须开启，否则字数/阅读时间不准
+hasCJKLanguage         = true
+enableEmoji            = true
+
+[pagination]
+    pagerSize = 6
+
+[permalinks]
+    post = "/p/:slug/"
+    page = "/:slug/"
+
+# ================= 访问统计 =================
+# 注册 Google Analytics 4 后，把下面两行的注释去掉并填入你的 G-XXXX 测量 ID
+# [services.googleAnalytics]
+#     ID = "G-XXXXXXXXXX"

@@ -1,0 +1,116 @@
+{{/* ================= 首页 Bing 每日风景图轮播 =================
+     数据源：bing.biturl.top（Bing 每日壁纸镜像，支持 CORS，zh-CN 中文版权信息）
+     官方接口 cn.bing.com/HPImageArchive.aspx 无 CORS 头，故走镜像。
+     获取失败时整个组件静默隐藏，不影响页面其余部分。
+*/}}
+{{- if .IsHome -}}
+<script>
+(function () {
+    var SLIDE_COUNT = 8;
+    var API = 'https://bing.biturl.top/?resolution=1920&format=json&mkt=zh-CN&index=';
+
+    var requests = [];
+    for (var i = 0; i < SLIDE_COUNT; i++) {
+        requests.push(
+            fetch(API + i, { mode: 'cors' })
+                .then(function (r) { return r.ok ? r.json() : null; })
+                .catch(function () { return null; })
+        );
+    }
+
+    Promise.all(requests).then(function (results) {
+        var slides = [];
+        results.forEach(function (d) {
+            if (d && d.url) {
+                slides.push({ url: d.url, caption: d.copyright || '' });
+            }
+        });
+        if (slides.length < 2) return; /* 数据不足则不显示 */
+        buildCarousel(slides);
+    });
+
+    function buildCarousel(slides) {
+        var anchor = document.querySelector('.article-list');
+        if (!anchor) return;
+
+        var section = document.createElement('section');
+        section.className = 'bing-carousel';
+        section.setAttribute('aria-roledescription', 'carousel');
+        section.setAttribute('aria-label', 'Bing 每日风景图');
+        section.innerHTML =
+            '<div class="carousel-viewport"><img class="carousel-img" alt=""></div>' +
+            '<div class="carousel-caption"><strong class="c-title"></strong><span class="c-copy"></span></div>' +
+            '<button class="carousel-arrow prev" aria-label="上一张"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6l-6 6 6 6"/></svg></button>' +
+            '<button class="carousel-arrow next" aria-label="下一张"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></button>' +
+            '<div class="carousel-dots"></div>';
+        anchor.insertAdjacentElement('beforebegin', section);
+
+        var img = section.querySelector('.carousel-img');
+        var titleEl = section.querySelector('.c-title');
+        var copyEl = section.querySelector('.c-copy');
+        var dotsWrap = section.querySelector('.carousel-dots');
+        var idx = 0;
+        var timer = null;
+        var reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+        slides.forEach(function (s, i) {
+            var dot = document.createElement('button');
+            dot.className = 'dot' + (i === 0 ? ' active' : '');
+            dot.setAttribute('aria-label', '第 ' + (i + 1) + ' 张，共 ' + slides.length + ' 张');
+            dot.addEventListener('click', function () { go(i); restart(); });
+            dotsWrap.appendChild(dot);
+            var preload = new Image(); /* 预加载 */
+            preload.src = s.url;
+        });
+
+        function render() {
+            var s = slides[idx];
+            img.style.opacity = '0';
+            var loader = new Image();
+            loader.onload = function () {
+                img.src = s.url;
+                img.alt = s.caption;
+                img.style.opacity = '1';
+            };
+            loader.src = s.url;
+            /* 版权文字形如「地点描述 (© 作者/图库)」，拆成标题与署名 */
+            var m = s.caption.match(/^(.*?)\s*\(©.*$/);
+            titleEl.textContent = m ? m[1] : s.caption;
+            copyEl.textContent = 'Bing 每日壁纸 · ' + (m ? s.caption.slice(m[1].length).replace(/^\s+/, '') : '');
+            Array.prototype.forEach.call(dotsWrap.children, function (d, i) {
+                d.classList.toggle('active', i === idx);
+            });
+        }
+
+        function go(i) { idx = ((i % slides.length) + slides.length) % slides.length; render(); }
+        function next() { go(idx + 1); }
+        function prev() { go(idx - 1); }
+        function stop() { if (timer) { clearInterval(timer); timer = null; } }
+        function restart() { stop(); if (!reduceMotion) { timer = setInterval(next, 6000); } }
+
+        section.querySelector('.next').addEventListener('click', function () { next(); restart(); });
+        section.querySelector('.prev').addEventListener('click', function () { prev(); restart(); });
+        section.addEventListener('mouseenter', stop);
+        section.addEventListener('mouseleave', restart);
+        section.addEventListener('focusin', stop);
+        section.addEventListener('focusout', restart);
+        section.addEventListener('keydown', function (e) {
+            if (e.key === 'ArrowRight') { next(); restart(); }
+            if (e.key === 'ArrowLeft') { prev(); restart(); }
+        });
+
+        var x0 = null;
+        section.addEventListener('touchstart', function (e) { x0 = e.touches[0].clientX; }, { passive: true });
+        section.addEventListener('touchend', function (e) {
+            if (x0 === null) return;
+            var dx = e.changedTouches[0].clientX - x0;
+            if (Math.abs(dx) > 40) { if (dx < 0) { next(); } else { prev(); } restart(); }
+            x0 = null;
+        }, { passive: true });
+
+        render();
+        restart();
+    }
+})();
+</script>
+{{- end -}}

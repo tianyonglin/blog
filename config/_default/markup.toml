@@ -1,0 +1,26 @@
+# ================= Markdown / HTML 渲染 =================
+[goldmark]
+    [goldmark.extensions]
+        [goldmark.extensions.passthrough]
+            enable = true
+            [goldmark.extensions.passthrough.delimiters]
+                block  = [["\\[", "\\]"], ["$$", "$$"]]
+                inline = [["\\(", "\\)"]]
+
+    [goldmark.renderer]
+        # true = 允许在 Markdown 文章里直接写 HTML 富文本
+        unsafe = true
+
+[tableOfContents]
+    endLevel   = 4
+    ordered    = true
+    startLevel = 2
+
+[highlight]
+    noClasses          = false
+    codeFences         = true
+    guessSyntax        = true
+    lineNoStart        = 1
+    lineNos            = true
+    lineNumbersInTable = true
+    tabWidth           = 4
